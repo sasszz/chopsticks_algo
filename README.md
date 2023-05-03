@@ -1,1 +1,3 @@
-Algorithm for Chopsticks Game!
+# Algorithm for Chopsticks Game!
+
+Technologies: Node, Javascript
