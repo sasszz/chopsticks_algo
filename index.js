@@ -3,13 +3,24 @@
 // ##################################################################################################//
 
 // INITIALIZE VARIABLES //////////////////////////////////////////////////////////////////////////////
-let selfRight = 0,
+let selfRight = 3,
   selfLeft = 1,
   oppRight = 1,
   oppLeft = 1;
 
 let selfTotalFingers = selfLeft + selfRight;
 let oppTotalFingers = oppLeft + oppRight;
+
+// HELPER FUNCTIONS //////////////////////////////////////////////////////////////////////////////
+const randomBool = () => {
+  // Will generate a 0 or 1 at random
+  const randomInt = Math.round(Math.random());
+  return randomInt;
+};
+
+function randomIntFromInterval(max) {
+  return Math.floor(Math.random() * max) + 1;
+}
 
 // ATTACK FUNCTION //////////////////////////////////////////////////////////////////////////////
 const attack = (oppHand, selfHand) => {
@@ -19,6 +30,7 @@ const attack = (oppHand, selfHand) => {
     // Accounts for destroying opponents hand
     oppHand = 0;
   }
+  console.log("Attack function ended");
   return oppHand;
 };
 
@@ -51,10 +63,9 @@ const myTurn = () => {
   console.log("Self Total Fingers = " + selfTotalFingers);
 
   if (selfTotalFingers == 1 || selfTotalFingers == 7 || selfTotalFingers == 8) {
-    // Cannot split on these combinations of fingers
+    // User cannot split on these combinations of fingers
     let returnValue = attack(selfLeft, oppLeft);
     oppLeft = returnValue;
-    console.log("First Option, function call ended");
   }
 
   if (
@@ -65,13 +76,44 @@ const myTurn = () => {
     selfTotalFingers == 6
   ) {
     // User can split or attack on these combinations of fingers
-    let returnValue = attack(selfLeft, oppLeft);
-    oppLeft = returnValue;
-    // split(); // Commenting out split function for now
-    console.log("Second Option, function call ended");
+    let decisionVar = randomBool();
+    console.log(`Decision Variable = ${decisionVar}`);
+    if (decisionVar == 0) {
+      let decisionVarTwo = randomIntFromInterval(4);
+      switch (decisionVarTwo) {
+        case 1:
+          console.log(
+            `Case 1, oppLeft = attack(oppLeft ${oppLeft}, selfLeft ${selfLeft})`
+          );
+          oppLeft = attack(oppLeft, selfLeft);
+          break;
+        case 2:
+          console.log(
+            `Case 2, oppRight = attack(oppRight ${oppRight}, selfLeft ${selfLeft})`
+          );
+          oppRight = attack(oppRight, selfLeft);
+          break;
+        case 3:
+          console.log(
+            `Case 3, oppLeft = attack(oppLeft ${oppLeft}, selfRight ${selfRight});`
+          );
+          oppLeft = attack(oppLeft, selfRight);
+          break;
+        case 4:
+          console.log(
+            `oppRight = attack(oppRight ${oppRight}, selfRight ${selfRight};`
+          );
+          oppRight = attack(oppRight, selfRight);
+          break;
+      }
+    } else {
+      split();
+    }
   }
 
   console.log("End of turn:");
   console.log(`Self Left = ${selfLeft}, Self Right = ${selfRight}`);
   console.log(`Opp Left = ${oppLeft}, Opp Right = ${oppRight}`);
 };
+
+myTurn();
