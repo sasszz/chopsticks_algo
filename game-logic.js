@@ -8,17 +8,8 @@ let whiteRight = 1,
   blackRight = 1,
   blackLeft = 1;
 
-let whiteTotalFingers = whiteLeft + whiteRight;
-let blackTotalFingers = blackLeft + blackRight;
-
-export {
-  whiteRight,
-  whiteLeft,
-  blackRight,
-  blackLeft,
-  whiteTotalFingers,
-  blackTotalFingers,
-};
+let whiteTurns = [];
+let blackTurns = [];
 
 // HELPER FUNCTIONS //////////////////////////////////////////////////////////////////////////////
 const randomBool = () => {
@@ -33,197 +24,202 @@ function randomIntFromInterval(max) {
 
 // ATTACK FUNCTION //////////////////////////////////////////////////////////////////////////////
 export const whiteAttack = (blackHand, whiteHand) => {
-  console.log("Attack function called");
+  console.log("White Attack");
   blackHand = whiteHand + blackHand;
   if (blackHand >= 5) {
     // Accounts for destroying blackonents hand
     blackHand = 0;
   }
-  console.log("Attack function ended");
   return blackHand;
 };
 
 export const blackAttack = (blackHand, whiteHand) => {
-  console.log("Attack function called");
+  console.log("Black Attack");
   whiteHand = whiteHand + blackHand;
   if (whiteHand >= 5) {
     // Accounts for destroying blackonents hand
     whiteHand = 0;
   }
-  console.log("Attack function ended");
   return whiteHand;
 };
 
 // SPLIT FUNCTION //////////////////////////////////////////////////////////////////////////////
 export const whiteSplit = () => {
-  console.log("Split function called");
-  if (whiteTotalFingers == 4) {
+  console.log("White Split");
+  if (whiteLeft + whiteRight == 4) {
     // special case for 4 because we do not want a situation where a person can have 4 fingers on one hand
     whiteRight == 2
       ? (whiteRight = 1) & (whiteLeft = 3)
       : (whiteRight = 2) & (whiteLeft = 2);
-  } else if (whiteTotalFingers % 2 == 0) {
+  } else if ((whiteLeft + whiteRight) % 2 == 0) {
     // total number of fingers is even
     whiteRight < whiteLeft
       ? whiteRight++ & whiteLeft--
       : whiteRight-- & whiteLeft++;
+  } else if (whiteLeft + whiteRight == 3) {
+    Math.abs(whiteLeft - whiteRight) > 1
+      ? (whiteRight = 2) & (whiteLeft = 1)
+      : (whiteRight = 3) & (whiteLeft = 0);
   } else {
-    // total number of fingers is odd
-    whiteLeft == 0 || whiteRight == 4
-      ? whiteRight-- & whiteLeft++
-      : whiteRight > whiteLeft || whiteLeft == 4 || whiteRight == 0
-      ? whiteRight++ & whiteLeft--
-      : whiteRight-- & whiteLeft++;
+    Math.abs(whiteLeft - whiteRight) > 1
+      ? (whiteRight = 3) & (whiteLeft = 2)
+      : (whiteRight = 4) & (whiteLeft = 2);
   }
 };
 
 export const blackSplit = () => {
-  console.log("Split function called");
-  if (blackTotalFingers == 4) {
+  console.log("Black Split");
+  if (blackLeft + blackRight == 4) {
     // special case for 4 because we do not want a situation where a person can have 4 fingers on one hand
+    console.log("==4");
     blackRight == 2
       ? (blackRight = 1) & (blackLeft = 3)
       : (blackRight = 2) & (blackLeft = 2);
-  } else if (blackTotalFingers % 2 == 0) {
+  } else if (blackLeft + blackRight == 3) {
+    console.log("==3");
+    Math.abs(blackLeft - blackRight) > 1
+      ? (blackRight = 2) & (blackLeft = 1)
+      : (blackRight = 3) & (blackLeft = 0);
+  } else if ((blackLeft + blackRight) % 2 == 0) {
+    console.log("% 2 == 0");
     // total number of fingers is even
     blackRight < blackLeft
       ? blackRight++ & blackLeft--
       : blackRight-- & blackLeft++;
   } else {
-    // total number of fingers is odd
-    blackLeft == 0 || blackRight == 4
-      ? blackRight-- & blackLeft++
-      : blackRight > blackLeft || blackLeft == 4 || blackRight == 0
-      ? blackRight++ & blackLeft--
-      : blackRight-- & blackLeft++;
+    console.log("last else");
+    Math.abs(blackLeft - blackRight) > 1
+      ? (blackRight = 3) & (blackLeft = 2)
+      : (blackRight = 4) & (blackLeft = 2);
   }
 };
 
 // TURN FUNCTION //////////////////////////////////////////////////////////////////////////////
 export const whiteTurn = () => {
-  console.log("Beginning of turn:");
-  console.log(`White Left = ${whiteLeft}, White Right = ${whiteRight}`);
-  console.log(`Black Left = ${blackLeft}, Black Right = ${blackRight}`);
-  console.log("White Total Fingers = " + whiteTotalFingers);
+  console.log("Beginning of White turn:");
 
   if (
-    whiteTotalFingers == 1 ||
-    whiteTotalFingers == 7 ||
-    whiteTotalFingers == 8
+    whiteLeft + whiteRight == 1 ||
+    whiteLeft + whiteRight == 7 ||
+    whiteLeft + whiteRight == 8
   ) {
     // User cannot split on these combinations of fingers
-    let returnValue = attack(whiteLeft, blackLeft);
+    let returnValue = whiteAttack(whiteLeft, blackLeft);
     blackLeft = returnValue;
   }
 
   if (
-    whiteTotalFingers == 2 ||
-    whiteTotalFingers == 3 ||
-    whiteTotalFingers == 4 ||
-    whiteTotalFingers == 5 ||
-    whiteTotalFingers == 6
+    whiteLeft + whiteRight == 2 ||
+    whiteLeft + whiteRight == 3 ||
+    whiteLeft + whiteRight == 4 ||
+    whiteLeft + whiteRight == 5 ||
+    whiteLeft + whiteRight == 6
   ) {
     // User can split or attack on these combinations of fingers
-    let decisionVar = randomBool();
+    let decisionVar;
+    if (
+      whiteTurns[whiteTurns.length - 1] == "Split" ||
+      whiteTurns.length == 0
+    ) {
+      decisionVar = 0;
+    } else {
+      decisionVar = randomBool();
+    }
     console.log(`Decision Variable = ${decisionVar}`);
     if (decisionVar == 0) {
-      let decisionVarTwo = randomIntFromInterval(4);
-      switch (decisionVarTwo) {
-        case 1:
-          console.log(
-            `Case 1, blackLeft = whiteAttack(blackLeft ${blackLeft}, whiteLeft ${whiteLeft})`
-          );
-          blackLeft = whiteAttack(blackLeft, whiteLeft);
-          break;
-        case 2:
-          console.log(
-            `Case 2, blackRight = whiteAttack(blackRight ${blackRight}, whiteLeft ${whiteLeft})`
-          );
-          blackRight = whiteAttack(blackRight, whiteLeft);
-          break;
-        case 3:
-          console.log(
-            `Case 3, blackLeft = whiteAttack(blackLeft ${blackLeft}, whiteRight ${whiteRight});`
-          );
-          blackLeft = whiteAttack(blackLeft, whiteRight);
-          break;
-        case 4:
-          console.log(
-            `blackRight = whiteAttack(blackRight ${blackRight}, whiteRight ${whiteRight};`
-          );
-          blackRight = whiteAttack(blackRight, whiteRight);
-          break;
-      }
+      whiteTurns.push("Attack");
+      blackRight != 0
+        ? (blackRight = whiteAttack(
+            blackRight,
+            whiteLeft != 0 ? whiteLeft : whiteRight
+          ))
+        : (blackLeft = whiteAttack(
+            blackLeft,
+            whiteLeft != 0 ? whiteLeft : whiteRight
+          ));
     } else {
+      whiteTurns.push("Split");
       whiteSplit();
     }
   }
 
-  console.log("End of turn:");
+  console.log("End of White turn:");
+  if (
+    (whiteLeft == 0 && whiteRight == 0) ||
+    (blackLeft == 0 && blackRight == 0)
+  ) {
+    console.log(
+      "######################### GAME OVER ##########################"
+    );
+  }
   console.log(`White Left = ${whiteLeft}, White Right = ${whiteRight}`);
   console.log(`Black Left = ${blackLeft}, Black Right = ${blackRight}`);
+  console.log(
+    "#####################################################################"
+  );
 };
 
 export const blackTurn = () => {
-  console.log("Beginning of turn:");
-  console.log(`White Left = ${whiteLeft}, White Right = ${whiteRight}`);
-  console.log(`Black Left = ${blackLeft}, Black Right = ${blackRight}`);
-  console.log("Black Total Fingers = " + blackTotalFingers);
+  console.log("Beginning of Black turn:");
 
   if (
-    blackTotalFingers == 1 ||
-    blackTotalFingers == 7 ||
-    blackTotalFingers == 8
+    blackLeft + blackRight == 1 ||
+    blackLeft + blackRight == 7 ||
+    blackLeft + blackRight == 8
   ) {
     // User cannot split on these combinations of fingers
-    let returnValue = attack(whiteLeft, blackLeft);
+    let returnValue = blackAttack(whiteLeft, blackLeft);
     blackLeft = returnValue;
   }
 
   if (
-    blackTotalFingers == 2 ||
-    blackTotalFingers == 3 ||
-    blackTotalFingers == 4 ||
-    blackTotalFingers == 5 ||
-    blackTotalFingers == 6
+    blackLeft + blackRight == 2 ||
+    blackLeft + blackRight == 3 ||
+    blackLeft + blackRight == 4 ||
+    blackLeft + blackRight == 5 ||
+    blackLeft + blackRight == 6
   ) {
     // User can split or attack on these combinations of fingers
-    let decisionVar = randomBool();
+    let decisionVar;
+    if (
+      blackTurns[blackTurns.length - 1] == "Split" ||
+      whiteTurns.length == 0
+    ) {
+      decisionVar = 0;
+    } else {
+      decisionVar = randomBool();
+    }
     console.log(`Decision Variable = ${decisionVar}`);
     if (decisionVar == 0) {
-      let decisionVarTwo = randomIntFromInterval(4);
-      switch (decisionVarTwo) {
-        case 1:
-          console.log(
-            `Case 1, whiteLeft = attack(whiteLeft ${whiteLeft}, blackLeft ${blackLeft})`
-          );
-          whiteLeft = blackAttack(whiteLeft, blackLeft);
-          break;
-        case 2:
-          console.log(
-            `Case 2, whiteRight = blackAttack(whiteRight ${whiteRight}, blackLeft ${blackLeft})`
-          );
-          whiteRight = blackAttack(whiteRight, blackLeft);
-          break;
-        case 3:
-          console.log(
-            `Case 3, whiteLeft = blackAttack(whiteLeft ${whiteLeft}, blackRight ${blackRight});`
-          );
-          whiteLeft = blackAttack(whiteLeft, blackRight);
-          break;
-        case 4:
-          console.log(
-            `whiteRight = blackAttack(whiteRight ${whiteRight}, blackRight ${blackRight};`
-          );
-          whiteRight = blackAttack(whiteRight, blackRight);
-          break;
-      }
+      blackTurns.push("Attack");
+      whiteRight != 0
+        ? (whiteRight = blackAttack(
+            whiteRight,
+            blackLeft != 0 ? blackLeft : blackRight
+          ))
+        : (whiteLeft = blackAttack(
+            whiteLeft,
+            blackLeft != 0 ? blackLeft : blackRight
+          ));
     } else {
+      blackTurns.push("Split");
       blackSplit();
     }
   }
 
-  console.log("End of turn:");
+  console.log("End of Black turn:");
+  if (
+    (whiteLeft == 0 && whiteRight == 0) ||
+    (blackLeft == 0 && blackRight == 0)
+  ) {
+    console.log(
+      "######################### GAME OVER ##########################"
+    );
+  }
   console.log(`White Left = ${whiteLeft}, White Right = ${whiteRight}`);
   console.log(`Black Left = ${blackLeft}, Black Right = ${blackRight}`);
+  console.log(
+    "#####################################################################"
+  );
+  return;
 };
