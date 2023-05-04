@@ -1,19 +1,16 @@
-import { whiteTurn, blackTurn } from "./game-logic.js";
+import { whiteTurn, blackTurn, turnObject, gameOver } from "./game-logic.js";
 
-blackTurn();
-whiteTurn();
-blackTurn();
-whiteTurn();
-blackTurn();
-whiteTurn();
-blackTurn();
-whiteTurn();
-blackTurn();
-whiteTurn();
-blackTurn();
-whiteTurn();
-blackTurn();
-whiteTurn();
-blackTurn();
+function recurse() {
+  if (gameOver) {
+    console.log("GAME OVER");
+    return;
+  } else {
+    blackTurn();
+    whiteTurn();
+    console.log(turnObject);
+    console.log("############################################");
+    recurse();
+  }
+}
 
-
+recurse();

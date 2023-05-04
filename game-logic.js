@@ -10,6 +10,8 @@ let whiteRight = 1,
 
 let whiteTurns = [];
 let blackTurns = [];
+export let turnObject;
+export let gameOver = false;
 
 // HELPER FUNCTIONS //////////////////////////////////////////////////////////////////////////////
 const randomBool = () => {
@@ -27,7 +29,7 @@ export const whiteAttack = (blackHand, whiteHand) => {
   console.log("White Attack");
   blackHand = whiteHand + blackHand;
   if (blackHand >= 5) {
-    // Accounts for destroying blackonents hand
+    // Accounts for destroying black opponents hand
     blackHand = 0;
   }
   return blackHand;
@@ -37,7 +39,7 @@ export const blackAttack = (blackHand, whiteHand) => {
   console.log("Black Attack");
   whiteHand = whiteHand + blackHand;
   if (whiteHand >= 5) {
-    // Accounts for destroying blackonents hand
+    // Accounts for destroying black opponents hand
     whiteHand = 0;
   }
   return whiteHand;
@@ -71,23 +73,19 @@ export const blackSplit = () => {
   console.log("Black Split");
   if (blackLeft + blackRight == 4) {
     // special case for 4 because we do not want a situation where a person can have 4 fingers on one hand
-    console.log("==4");
     blackRight == 2
       ? (blackRight = 1) & (blackLeft = 3)
       : (blackRight = 2) & (blackLeft = 2);
   } else if (blackLeft + blackRight == 3) {
-    console.log("==3");
     Math.abs(blackLeft - blackRight) > 1
       ? (blackRight = 2) & (blackLeft = 1)
       : (blackRight = 3) & (blackLeft = 0);
   } else if ((blackLeft + blackRight) % 2 == 0) {
-    console.log("% 2 == 0");
     // total number of fingers is even
     blackRight < blackLeft
       ? blackRight++ & blackLeft--
       : blackRight-- & blackLeft++;
   } else {
-    console.log("last else");
     Math.abs(blackLeft - blackRight) > 1
       ? (blackRight = 3) & (blackLeft = 2)
       : (blackRight = 4) & (blackLeft = 2);
@@ -125,7 +123,6 @@ export const whiteTurn = () => {
     } else {
       decisionVar = randomBool();
     }
-    console.log(`Decision Variable = ${decisionVar}`);
     if (decisionVar == 0) {
       whiteTurns.push("Attack");
       blackRight != 0
@@ -144,19 +141,15 @@ export const whiteTurn = () => {
   }
 
   console.log("End of White turn:");
+  turnObject = { whiteLeft, whiteRight, blackLeft, blackRight };
+
   if (
-    (whiteLeft == 0 && whiteRight == 0) ||
-    (blackLeft == 0 && blackRight == 0)
+    (turnObject.whiteLeft == 0 && turnObject.whiteRight == 0) ||
+    (turnObject.blackLeft == 0 && turnObject.blackRight)
   ) {
-    console.log(
-      "######################### GAME OVER ##########################"
-    );
+    gameOver = true;
   }
-  console.log(`White Left = ${whiteLeft}, White Right = ${whiteRight}`);
-  console.log(`Black Left = ${blackLeft}, Black Right = ${blackRight}`);
-  console.log(
-    "#####################################################################"
-  );
+  return turnObject;
 };
 
 export const blackTurn = () => {
@@ -189,7 +182,6 @@ export const blackTurn = () => {
     } else {
       decisionVar = randomBool();
     }
-    console.log(`Decision Variable = ${decisionVar}`);
     if (decisionVar == 0) {
       blackTurns.push("Attack");
       whiteRight != 0
@@ -208,18 +200,13 @@ export const blackTurn = () => {
   }
 
   console.log("End of Black turn:");
+  turnObject = { whiteLeft, whiteRight, blackLeft, blackRight };
+
   if (
-    (whiteLeft == 0 && whiteRight == 0) ||
-    (blackLeft == 0 && blackRight == 0)
+    (turnObject.whiteLeft == 0 && turnObject.whiteRight == 0) ||
+    (turnObject.blackLeft == 0 && turnObject.blackRight)
   ) {
-    console.log(
-      "######################### GAME OVER ##########################"
-    );
+    gameOver = true;
   }
-  console.log(`White Left = ${whiteLeft}, White Right = ${whiteRight}`);
-  console.log(`Black Left = ${blackLeft}, Black Right = ${blackRight}`);
-  console.log(
-    "#####################################################################"
-  );
-  return;
+  return turnObject;
 };
